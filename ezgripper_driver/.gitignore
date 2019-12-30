@@ -1,0 +1,13 @@
+# Python
+*.pyc
+
+# Qt
+*.qmlc
+*.jsc
+*.ts
+*.qm
+
+# pytest
+.coverage
+.cache
+.pytest_cache
