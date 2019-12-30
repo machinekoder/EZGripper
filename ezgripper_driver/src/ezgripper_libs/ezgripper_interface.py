@@ -5,7 +5,7 @@
 #
 # Copyright (c) 2015, SAKE Robotics
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
 #
@@ -105,7 +105,7 @@ class EZGripper(object):
         self._client.send_goal_and_wait(goal)
         rospy.loginfo("ezgripper_interface: goto position done")
 
-    def close(self, max_effort): 
+    def close(self, max_effort):
         rospy.loginfo("ezgripper_interface: close, effort %.1f"%max_effort)
         goal = GripperCommandGoal()
         goal.command.position = 0.0
@@ -145,7 +145,7 @@ class EZGripper(object):
         # position in % 0 to 100 (0 is closed), effort in % 0 to 100
         rospy.loginfo("ezgripper_interface: goto position %.3f" %grip_position)
         goal = GripperCommandGoal()
-        goal.command.position = grip_position   # range(0.01 to 1.0)
+        goal.command.position = grip_position   # range(0.0 to 100.0)
         goal.command.max_effort = grip_effort #  >0 to 100, if 0.0, torque is released
         self._client.send_goal_and_wait(goal)
         rospy.loginfo("ezgripper_interface: goto position done")
