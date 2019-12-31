@@ -18,8 +18,8 @@ class Gripper(object):
 
     def __init__(self, action_name, gripper_name):
         self.name = gripper_name
-        self._position = 0.0
-        self._at_pos = False
+        self._position = 100.0
+        self._at_pos = True
         self._connected = False
         self._action_server = actionlib.SimpleActionServer(
             action_name,
