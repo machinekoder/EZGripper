@@ -1,8 +1,15 @@
 <launch>
-  <node pkg="ezgripper_driver" type="ezgripper.py" name="ezgripper" output="screen">
+
+  <arg name="sim" default="true"/>
+
+  <node pkg="ezgripper_driver" type="ezgripper.py" name="ezgripper" output="screen" unless="$(arg sim)">
     <!-- <param name="~port" value="/dev/ttyUSB0"/> -->
     <param name="~port" value="hwgrep://0403:6015"/>
     <param name="~baud" value="57600"/>
+    <rosparam param="grippers">{main:[1]}</rosparam>
+  </node>
+
+  <node pkg="ezgripper_driver" type="ezgripper_sim.py" name="ezgripper" output="screen" if="$(arg sim)">
     <rosparam param="grippers">{main:[1]}</rosparam>
   </node>
 
@@ -14,7 +21,7 @@
   <arg name="gui" default="true" />
   <arg name="rvizconfig" default="$(find ezgripper_driver)/rviz/urdf.rviz" />
 
-  <param name="robot_description" command="$(find xacro)/xacro.py $(arg model)" />
+  <param name="robot_description" command="$(find xacro)/xacro --inorder $(arg model)" />
   <param name="use_gui" value="$(arg gui)"/>
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="state_publisher" />
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rvizconfig)" required="true" />
