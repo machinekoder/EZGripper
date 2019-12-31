@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# coding=utf-8
 
 #####################################################################
 # Software License Agreement (BSD License)
@@ -46,20 +47,21 @@ from sensor_msgs.msg import JointState
 
 DIAG_UPDATE_INTERVAL_S = 1.0
 STATUS_UPDATE_INTERVAL_S = 0.2
+UPDATE_RATE_HZ = 20
 
 
 class GripperActionServer(object):
     def __init__(self, action_name, gripper):
         self.gripper = gripper
-        self.action_server = actionlib.SimpleActionServer(
+        self._action_server = actionlib.SimpleActionServer(
             action_name,
             GripperCommandAction,
-            self.gripper_action_execute,
+            self._gripper_action_execute,
             False,
         )
-        self.action_server.start()
+        self._action_server.start()
 
-    def gripper_action_execute(self, goal):
+    def _gripper_action_execute(self, goal):
         rospy.loginfo(
             "Execute goal: position=%.1f, max_effort=%.1f"
             % (goal.command.position, goal.command.max_effort)
@@ -82,7 +84,7 @@ class GripperActionServer(object):
         result.effort = goal.command.max_effort
         result.stalled = False
         result.reached_goal = True
-        self.action_server.set_succeeded(result)
+        self._action_server.set_succeeded(result)
 
 
 class GripperDiagnostics(object):
@@ -134,7 +136,6 @@ class GripperStatus(object):
 
     def __init__(self, grippers):
         self._grippers = grippers
-
         self._pub = rospy.Publisher('joint_states', JointState, queue_size=5)
 
     def publish_status(self):
@@ -178,8 +179,6 @@ class EZGripper(object):
 
 
 def main():
-    # Main Program
-
     rospy.init_node('ezgripper')
     rospy.loginfo("Started")
 
@@ -201,7 +200,7 @@ def main():
     status = GripperStatus(grippers)
 
     # Main Loop
-    r = rospy.Rate(20)  # hz
+    r = rospy.Rate(UPDATE_RATE_HZ)  # hz
     diags_last_sent = 0
     status_last_sent = 0
     while not rospy.is_shutdown():
