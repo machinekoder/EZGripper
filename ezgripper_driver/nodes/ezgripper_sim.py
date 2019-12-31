@@ -6,7 +6,7 @@ import rospy
 import actionlib
 from control_msgs.msg import GripperCommandAction, GripperCommandResult
 from sensor_msgs.msg import JointState
-from std_msgs.msg import Float32
+from std_msgs.msg import Float32, Bool
 from std_srvs.srv import Empty, EmptyResponse
 
 STATUS_UPDATE_INTERVAL_S = 0.2
@@ -56,9 +56,7 @@ class Gripper(object):
         )
         fb_closed_topic = '~{}/fb_at_pos'.format(gripper_name)
         self._subs.append(
-            rospy.Subscriber(
-                fb_closed_topic, Float32, self._on_fb_at_pos_received
-            )
+            rospy.Subscriber(fb_closed_topic, Bool, self._on_fb_at_pos_received)
         )
 
     @property
