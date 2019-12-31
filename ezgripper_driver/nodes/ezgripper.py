@@ -79,7 +79,8 @@ class GripperActionServer(object):
             rospy.loginfo("Go to position: done")
 
         result = GripperCommandResult()
-        # not necessarily the current position of the gripper if the gripper did not reach its goal position.
+        # not necessarily the current position of the gripper
+        # if the gripper did not reach its goal position.
         result.position = goal.command.position
         result.effort = goal.command.max_effort
         result.stalled = False
