@@ -211,20 +211,20 @@ def main():
                 diagnostics.send_diags()
                 diags_last_sent = now
             except Exception as e:
-                rospy.logerr("Exception while reading diagnostics: %s" % e)
+                rospy.logerr_throttle(5.0, "Exception while reading diagnostics: %s" % e)
 
         if now - status_last_sent > STATUS_UPDATE_INTERVAL_S:
             try:
                 status.publish_status()
                 status_last_sent = now
             except Exception as e:
-                rospy.logerr("Exception while publishing status %s" % e)
+                rospy.logerr_throttle(5.0, "Exception while publishing status %s" % e)
 
         for servo in all_servos:
             try:
                 servo.check_overload_and_recover()
             except Exception as e:
-                rospy.logerr("Exception while checking overload: %s" % e)
+                rospy.logerr_throttle(5.0, "Exception while checking overload: %s" % e)
                 servo.flushAll()
 
         r.sleep()
