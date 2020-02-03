@@ -18,7 +18,7 @@
         <geometry>
           <mesh filename="package://ezgripper_driver/meshes/ezgripper_gen2_plus/SAKE_Palm_Dual_Gen2_simple.stl"/>
         </geometry>
-        <material name="${prefix}Black_Plastic"/>
+        <material name="${prefix}White_Plastic"/>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0"/>
