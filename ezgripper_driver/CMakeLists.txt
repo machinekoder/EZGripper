@@ -9,7 +9,6 @@ find_package(catkin REQUIRED)
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
-
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
@@ -76,10 +75,10 @@ catkin_python_setup()
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES gripper4_description
-#  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
+  #  INCLUDE_DIRS include
+  #  LIBRARIES gripper4_description
+  #  CATKIN_DEPENDS other_catkin_pkg
+  #  DEPENDS system_lib
 )
 
 ###########
@@ -141,6 +140,15 @@ catkin_package(
 #   # myfile2
 #   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 # )
+
+# Mark executable scripts (Python etc.) for installation
+# in contrast to setup.py, you can choose the destination
+install(PROGRAMS nodes/client.py nodes/ezgripper.py nodes/ezgripperGUI.py
+                 nodes/ezgripper_sim.py
+        DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+
+# Install other files
+install(DIRECTORY launch DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
 #############
 ## Testing ##
