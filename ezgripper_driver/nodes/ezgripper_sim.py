@@ -72,7 +72,7 @@ class Gripper(object):
             "Execute goal: position=%.1f, max_effort=%.1f"
             % (goal.command.position, goal.command.max_effort)
         )
-        self._at_pos = False
+        self._at_pos = self._position == goal.command.position
         self._cmd_pos_pub.publish(Float32(data=goal.command.position))
         self._cmd_effort_pub.publish(Float32(data=goal.command.max_effort))
 
