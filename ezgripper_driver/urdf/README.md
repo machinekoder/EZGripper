@@ -15,7 +15,6 @@ How to launch Rviz
 
 $ roslaunch ezgripper_driver display_gen2.launch    <-launches gen2 quad configuration->
 
-or 
+or
 
 $ roslaunch ezgripper_driver display.launch   <-launches gen1 quad configuration->
-

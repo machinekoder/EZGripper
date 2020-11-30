@@ -34,23 +34,23 @@
     </joint>
 
 
-    <ezgripper_finger prefix="${prefix}" postfix="1" reflect="1"/>
-    <ezgripper_finger prefix="${prefix}" postfix="2" reflect="1"/>
-    <ezgripper_finger prefix="${prefix}" postfix="3" reflect="1"/>
-    <ezgripper_finger prefix="${prefix}" postfix="4" reflect="1"/>
+    <xacro:ezgripper_finger prefix="${prefix}" postfix="1" reflect="1"/>
+    <xacro:ezgripper_finger prefix="${prefix}" postfix="2" reflect="1"/>
+    <xacro:ezgripper_finger prefix="${prefix}" postfix="3" reflect="1"/>
+    <xacro:ezgripper_finger prefix="${prefix}" postfix="4" reflect="1"/>
 
 
-    <ezgripper_knuckle prefix="${prefix}" postfix="1" reflectY="1" reflectZ="1" reflectR="1" mimic_test="false"/>
-    <ezgripper_knuckle prefix="${prefix}" postfix="2" reflectY="-1" reflectZ="1" reflectR="-1" mimic_test="true"/>
-    <ezgripper_knuckle prefix="${prefix}" postfix="3" reflectY="1" reflectZ="-1" reflectR="1" mimic_test="true"/>
-    <ezgripper_knuckle prefix="${prefix}" postfix="4" reflectY="-1" reflectZ="-1" reflectR="-1" mimic_test="true"/>
+    <xacro:ezgripper_knuckle prefix="${prefix}" postfix="1" reflectY="1" reflectZ="1" reflectR="1" mimic_test="false"/>
+    <xacro:ezgripper_knuckle prefix="${prefix}" postfix="2" reflectY="-1" reflectZ="1" reflectR="-1" mimic_test="true"/>
+    <xacro:ezgripper_knuckle prefix="${prefix}" postfix="3" reflectY="1" reflectZ="-1" reflectR="1" mimic_test="true"/>
+    <xacro:ezgripper_knuckle prefix="${prefix}" postfix="4" reflectY="-1" reflectZ="-1" reflectR="-1" mimic_test="true"/>
 
-    <ezgripper_knuckle_trans prefix="${prefix}" postfix="1"/>
-    <ezgripper_knuckle_trans prefix="${prefix}" postfix="2"/>
-    <ezgripper_knuckle_trans prefix="${prefix}" postfix="3"/>
-    <ezgripper_knuckle_trans prefix="${prefix}" postfix="4"/>
+    <xacro:ezgripper_knuckle_trans prefix="${prefix}" postfix="1"/>
+    <xacro:ezgripper_knuckle_trans prefix="${prefix}" postfix="2"/>
+    <xacro:ezgripper_knuckle_trans prefix="${prefix}" postfix="3"/>
+    <xacro:ezgripper_knuckle_trans prefix="${prefix}" postfix="4"/>
 
-    <gazebo_knuckle_jsp prefix="${prefix}" />
+    <xacro:gazebo_knuckle_jsp prefix="${prefix}" />
 
 
 </xacro:macro>

@@ -31,8 +31,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 ##
 
-from __future__ import print_function
-from lib_robotis import create_connection, Robotis_Servo
+from .lib_robotis import create_connection, RobotisServo
 import time
 
 
@@ -57,17 +56,15 @@ def wait_for_stop(servo):
             break
 
 
-class Gripper(object):
+class Gripper:
     GRIP_MAX = 2500  # maximum open position for grippers
     TORQUE_MAX = 800  # maximum torque - MX-64=500, MX-106=350
-    TORQUE_HOLD = (
-        13
-    )  # This is percentage of TORQUE_MAX. In absolute units: holding torque - MX-64=100, MX-106=80
+    TORQUE_HOLD = 13  # This is percentage of TORQUE_MAX. In absolute units: holding torque - MX-64=100, MX-106=80
 
     def __init__(self, connection, name, servo_ids):
         self.name = name
         self.servos = [
-            Robotis_Servo(connection, servo_id) for servo_id in servo_ids
+            RobotisServo(connection, servo_id) for servo_id in servo_ids
         ]
         for servo in self.servos:
             servo.ensure_byte_set(
@@ -78,19 +75,15 @@ class Gripper(object):
     def scale(self, n, to_max):
         # Scale from 0..100 to 0..to_max
         result = int(n * to_max / 100)
-        if result > to_max:
-            result = to_max
-        if result < 0:
-            result = 0
+        result = min(result, to_max)
+        result = max(result, 0)
         return result
 
     def down_scale(self, n, to_max):
         # Scale from 0..to_max to 0..100
         result = int(round(n * 100.0 / to_max))
-        if result > 100:
-            result = 100
-        if result < 0:
-            result = 0
+        result = min(result, 100)
+        result = max(result, 0)
         return result
 
     def calibrate(self):
@@ -160,10 +153,7 @@ class Gripper(object):
         return self.down_scale(servo_position, self.GRIP_MAX)
 
     def get_positions(self):
-        positions = []
-        for i in range(len(self.servos)):
-            positions.append(self.get_position(i))
-        return positions
+        return [self.get_position(i) for i in range(len(self.servos))]
 
     def goto_position(self, position, closing_torque):
         # Using the 0-100% range allows the user to define the definition of where the gap is measured.
@@ -188,7 +178,7 @@ class Gripper(object):
         # This does not provide continuous grasping torque.
         holding_torque = min(self.TORQUE_HOLD, closing_torque)
         self.set_max_effort(holding_torque)
-        print('goto_position done')
+        print("goto_position done")
 
     def release(self):
         for servo in self.servos:
@@ -198,18 +188,15 @@ class Gripper(object):
         self.goto_position(100, 100)
 
     def get_temperatures(self):
-        temperatures = []
-        for servo in self.servos:
-            temperatures.append(servo.read_temperature())
-        return temperatures
+        return [servo.read_temperature() for servo in self.servos]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # Sample code
-    connection = create_connection(dev_name='/dev/ttyUSB0', baudrate=57600)
+    connection = create_connection(dev_name="/dev/ttyUSB0", baudrate=57600)
     # connection = create_connection(dev_name='hwgrep://0403:6001', baudrate=57600)
     # connection = create_connection(dev_name='socket://127.0.0.1:4000', baudrate=57600)
-    gripper = Gripper(connection, 'gripper1', [1])
+    gripper = Gripper(connection, "gripper1", [1])
     # gripper = Gripper(connection, 'gripper1', [1,2])
 
     print("temperatures:", gripper.get_temperatures())

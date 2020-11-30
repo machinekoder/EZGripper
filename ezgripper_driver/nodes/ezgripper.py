@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# coding=utf-8
 
 #####################################################################
 # Software License Agreement (BSD License)
@@ -50,7 +49,7 @@ STATUS_UPDATE_INTERVAL_S = 0.2
 UPDATE_RATE_HZ = 20
 
 
-class GripperActionServer(object):
+class GripperActionServer:
     def __init__(self, action_name, gripper):
         self.gripper = gripper
         self._action_server = actionlib.SimpleActionServer(
@@ -88,12 +87,12 @@ class GripperActionServer(object):
         self._action_server.set_succeeded(result)
 
 
-class GripperDiagnostics(object):
+class GripperDiagnostics:
     def __init__(self, grippers):
         self._grippers = grippers
 
         self._pub = rospy.Publisher(
-            '/diagnostics', DiagnosticArray, queue_size=1
+            "/diagnostics", DiagnosticArray, queue_size=1
         )
 
     def send_diags(self):
@@ -109,35 +108,35 @@ class GripperDiagnostics(object):
                     gripper.name,
                     servo.servo_id,
                 )
-                status.hardware_id = '%s' % servo.servo_id
+                status.hardware_id = "%s" % servo.servo_id
                 temperature = servo.read_temperature()
-                status.values.append(KeyValue('Temperature', str(temperature)))
+                status.values.append(KeyValue("Temperature", str(temperature)))
                 status.values.append(
-                    KeyValue('Voltage', str(servo.read_voltage()))
+                    KeyValue("Voltage", str(servo.read_voltage()))
                 )
 
                 if temperature >= 70:
                     status.level = DiagnosticStatus.ERROR
-                    status.message = 'OVERHEATING'
+                    status.message = "OVERHEATING"
                 elif temperature >= 65:
                     status.level = DiagnosticStatus.WARN
-                    status.message = 'HOT'
+                    status.message = "HOT"
                 else:
                     status.level = DiagnosticStatus.OK
-                    status.message = 'OK'
+                    status.message = "OK"
 
                 msg.status.append(status)
 
         self._pub.publish(msg)
 
 
-class GripperStatus(object):
+class GripperStatus:
     PALM_L1_CLOSED_POS = 1.84
     L1_L2_CLOSED_POS = 0.0
 
     def __init__(self, grippers):
         self._grippers = grippers
-        self._pub = rospy.Publisher('joint_states', JointState, queue_size=5)
+        self._pub = rospy.Publisher("joint_states", JointState, queue_size=5)
 
     def publish_status(self):
         msg = JointState()
@@ -146,26 +145,22 @@ class GripperStatus(object):
             # gripper.name
             pos = gripper.get_position()
             joint_pos = (100.0 - pos) / 100.0 * self.PALM_L1_CLOSED_POS
-            msg.name.append(
-                '{}_ezgripper_knuckle_palm_L1_1'.format(gripper.name)
-            )
+            msg.name.append(f"{gripper.name}_ezgripper_knuckle_palm_L1_1")
             msg.position.append(joint_pos)
             joint_pos = (100.0 - pos) / 100.0 * self.L1_L2_CLOSED_POS
-            msg.name.append(
-                'main_ezgripper_knuckle_L1_L2_1'.format(gripper.name)
-            )
+            msg.name.append("main_ezgripper_knuckle_L1_L2_1")
             msg.position.append(joint_pos)
 
         self._pub.publish(msg)
 
 
-class EZGripper(object):
+class EZGripper:
     def __init__(self, connection, gripper_name, servo_ids):
         self.gripper = Gripper(connection, gripper_name, servo_ids)
 
-        self._action_srv = GripperActionServer('~' + gripper_name, self.gripper)
+        self._action_srv = GripperActionServer("~" + gripper_name, self.gripper)
         self._calibrate_srv = rospy.Service(
-            '~' + gripper_name + '/calibrate', Empty, self._calibrate_srv
+            "~" + gripper_name + "/calibrate", Empty, self._calibrate_srv
         )
 
         self.gripper.calibrate()
@@ -180,12 +175,12 @@ class EZGripper(object):
 
 
 def main():
-    rospy.init_node('ezgripper')
+    rospy.init_node("ezgripper")
     rospy.loginfo("Started")
 
-    port_name = rospy.get_param('~port', '/dev/ttyUSB0')
-    baud = int(rospy.get_param('~baud', '57600'))
-    gripper_params = rospy.get_param('~grippers')
+    port_name = rospy.get_param("~port", "/dev/ttyUSB0")
+    baud = int(rospy.get_param("~baud", "57600"))
+    gripper_params = rospy.get_param("~grippers")
 
     connection = create_connection(port_name, baud)
 
@@ -211,20 +206,26 @@ def main():
                 diagnostics.send_diags()
                 diags_last_sent = now
             except Exception as e:
-                rospy.logerr_throttle(5.0, "Exception while reading diagnostics: %s" % e)
+                rospy.logerr_throttle(
+                    5.0, "Exception while reading diagnostics: %s" % e
+                )
 
         if now - status_last_sent > STATUS_UPDATE_INTERVAL_S:
             try:
                 status.publish_status()
                 status_last_sent = now
             except Exception as e:
-                rospy.logerr_throttle(5.0, "Exception while publishing status %s" % e)
+                rospy.logerr_throttle(
+                    5.0, "Exception while publishing status %s" % e
+                )
 
         for servo in all_servos:
             try:
                 servo.check_overload_and_recover()
             except Exception as e:
-                rospy.logerr_throttle(5.0, "Exception while checking overload: %s" % e)
+                rospy.logerr_throttle(
+                    5.0, "Exception while checking overload: %s" % e
+                )
                 servo.flushAll()
 
         r.sleep()
@@ -232,5 +233,5 @@ def main():
     rospy.loginfo("Exiting")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

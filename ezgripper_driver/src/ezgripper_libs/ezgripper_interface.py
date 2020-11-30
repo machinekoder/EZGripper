@@ -50,25 +50,29 @@ from std_srvs.srv import Empty
 #
 
 
-class EZGripper(object):
+class EZGripper:
     def __init__(self, name):
         self.name = name
-        self._grip_max = 100.0 #maximum open position for grippers - correlates to .17 meters
+        self._grip_max = 100.0  # maximum open position for grippers - correlates to .17 meters
         self._grip_value = self._grip_max
-        self._grip_min = 0.01 #if 0.0, torque mode, not position mode
-        self._grip_step = self._grip_max/15 # gripper step Cross Up and Cross Down
+        self._grip_min = 0.01  # if 0.0, torque mode, not position mode
+        self._grip_step = (
+            self._grip_max / 15
+        )  # gripper step Cross Up and Cross Down
         self._connect_to_gripper_action()
         self._connect_to_calibrate_srv()
 
     def _connect_to_gripper_action(self):
-        rospy.loginfo("Waiting for action server %s..."%self.name)
-        self._client = actionlib.SimpleActionClient(self.name, GripperCommandAction)
+        rospy.loginfo("Waiting for action server %s..." % self.name)
+        self._client = actionlib.SimpleActionClient(
+            self.name, GripperCommandAction
+        )
         self._client.wait_for_server(rospy.Duration(60))
         rospy.loginfo("Connected to action server")
 
     def _connect_to_calibrate_srv(self):
-        service_name = self.name + '/calibrate'
-        rospy.loginfo("Waiting for service %s..."%service_name)
+        service_name = self.name + "/calibrate"
+        rospy.loginfo("Waiting for service %s..." % service_name)
         rospy.wait_for_service(service_name)
         self._calibrate_srv = rospy.ServiceProxy(service_name, Empty)
         rospy.loginfo("Connected to service " + service_name)
@@ -87,7 +91,9 @@ class EZGripper(object):
         self._grip_value = self._grip_value + self._grip_step
         if self._grip_value > self._grip_max:
             self._grip_value = self._grip_max
-        rospy.loginfo("ezgripper_interface: goto position %.3f"%self._grip_value)
+        rospy.loginfo(
+            "ezgripper_interface: goto position %.3f" % self._grip_value
+        )
         goal = GripperCommandGoal()
         goal.command.position = self._grip_value
         goal.command.max_effort = 50.0
@@ -98,7 +104,9 @@ class EZGripper(object):
         self._grip_value = self._grip_value - self._grip_step
         if self._grip_value < self._grip_min:
             self._grip_value = self._grip_min
-        rospy.loginfo("ezgripper_interface: goto position %.3f"%self._grip_value)
+        rospy.loginfo(
+            "ezgripper_interface: goto position %.3f" % self._grip_value
+        )
         goal = GripperCommandGoal()
         goal.command.position = self._grip_value
         goal.command.max_effort = 50.0
@@ -106,7 +114,7 @@ class EZGripper(object):
         rospy.loginfo("ezgripper_interface: goto position done")
 
     def close(self, max_effort):
-        rospy.loginfo("ezgripper_interface: close, effort %.1f"%max_effort)
+        rospy.loginfo("ezgripper_interface: close, effort %.1f" % max_effort)
         goal = GripperCommandGoal()
         goal.command.position = 0.0
         goal.command.max_effort = max_effort
@@ -118,7 +126,7 @@ class EZGripper(object):
         rospy.loginfo("ezgripper_interface: hard close")
         goal = GripperCommandGoal()
         goal.command.position = 0.0
-        goal.command.max_effort = 100 # >0 to 100
+        goal.command.max_effort = 100  # >0 to 100
         self._client.send_goal_and_wait(goal)
         rospy.loginfo("ezgripper_interface: hard close done")
         self._grip_value = self._grip_min
@@ -127,7 +135,7 @@ class EZGripper(object):
         rospy.loginfo("ezgripper_interface: soft close")
         goal = GripperCommandGoal()
         goal.command.position = 0.0
-        goal.command.max_effort = 20.0 # >0 to 100
+        goal.command.max_effort = 20.0  # >0 to 100
         self._client.send_goal_and_wait(goal)
         rospy.loginfo("ezgripper_interface: soft close done")
         self._grip_value = self._grip_min
@@ -135,18 +143,20 @@ class EZGripper(object):
     def open(self):
         rospy.loginfo("ezgripper_interface: open")
         goal = GripperCommandGoal()
-        goal.command.position = 100.0   # 100% range (0..100)
-        goal.command.max_effort = 100.0 # >0 to 100
+        goal.command.position = 100.0  # 100% range (0..100)
+        goal.command.max_effort = 100.0  # >0 to 100
         self._client.send_goal_and_wait(goal)
         rospy.loginfo("ezgripper_interface: open done")
         self._grip_value = self._grip_max
 
-    def goto_position(self, grip_position = 5.0, grip_effort = 20.0):
+    def goto_position(self, grip_position=5.0, grip_effort=20.0):
         # position in % 0 to 100 (0 is closed), effort in % 0 to 100
-        rospy.loginfo("ezgripper_interface: goto position %.3f" %grip_position)
+        rospy.loginfo("ezgripper_interface: goto position %.3f" % grip_position)
         goal = GripperCommandGoal()
-        goal.command.position = grip_position   # range(0.0 to 100.0)
-        goal.command.max_effort = grip_effort #  >0 to 100, if 0.0, torque is released
+        goal.command.position = grip_position  # range(0.0 to 100.0)
+        goal.command.max_effort = (
+            grip_effort  # >0 to 100, if 0.0, torque is released
+        )
         self._client.send_goal_and_wait(goal)
         rospy.loginfo("ezgripper_interface: goto position done")
         self._grip_value = grip_position
@@ -154,15 +164,18 @@ class EZGripper(object):
     def release(self):
         rospy.loginfo("ezgripper_interface: release")
         goal = GripperCommandGoal()
-        goal.command.position = 0.0 # not dependent on position
-        goal.command.max_effort = 0.0 # max_effort = 0.0 releases all torque on motor
+        goal.command.position = 0.0  # not dependent on position
+        goal.command.max_effort = (
+            0.0  # max_effort = 0.0 releases all torque on motor
+        )
         self._client.send_goal_and_wait(goal)
         rospy.loginfo("ezgripper_interface: release done")
         self._grip_value = self._grip_min
 
+
 if __name__ == "__main__":
     rospy.init_node("ezgripper_client")
-    ez = EZGripper('ezgripper/main')
+    ez = EZGripper("ezgripper/main")
     ez.open()
     ez.calibrate()
     ez.open()

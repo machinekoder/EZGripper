@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# coding=utf-8
 from collections import defaultdict
 
 import rospy
@@ -13,7 +12,7 @@ STATUS_UPDATE_INTERVAL_S = 0.2
 UPDATE_RATE_HZ = 20
 
 
-class Gripper(object):
+class Gripper:
     STATUS_UPDATE_RATE_HZ = 50
 
     def __init__(self, action_name, gripper_name):
@@ -32,7 +31,7 @@ class Gripper(object):
         self._sub_listener.connected_cbs.append(self._on_connected)
         self._sub_listener.disconnected_cbs.append(self._on_disconnected)
 
-        cmd_pos_topic = '~{}/cmd_pos'.format(gripper_name)
+        cmd_pos_topic = f"~{gripper_name}/cmd_pos"
         self._cmd_pos_pub = rospy.Publisher(
             cmd_pos_topic,
             Float32,
@@ -40,7 +39,7 @@ class Gripper(object):
             latch=True,
             subscriber_listener=self._sub_listener,
         )
-        cmd_effort_topic = '~{}/cmd_effort'.format(gripper_name)
+        cmd_effort_topic = f"~{gripper_name}/cmd_effort"
         self._cmd_effort_pub = rospy.Publisher(
             cmd_effort_topic,
             Float32,
@@ -50,11 +49,11 @@ class Gripper(object):
         )
 
         self._subs = []
-        fb_pos_topic = '~{}/fb_pos'.format(gripper_name)
+        fb_pos_topic = f"~{gripper_name}/fb_pos"
         self._subs.append(
             rospy.Subscriber(fb_pos_topic, Float32, self._on_fb_pos_received)
         )
-        fb_closed_topic = '~{}/fb_at_pos'.format(gripper_name)
+        fb_closed_topic = f"~{gripper_name}/fb_at_pos"
         self._subs.append(
             rospy.Subscriber(fb_closed_topic, Bool, self._on_fb_at_pos_received)
         )
@@ -99,17 +98,17 @@ class Gripper(object):
         self._at_pos = msg.data
 
     def _on_connected(self):
-        rospy.loginfo('Simulation connected')
+        rospy.loginfo("Simulation connected")
         self._connected = True
 
     def _on_disconnected(self):
-        rospy.loginfo('Simulation disconnected')
+        rospy.loginfo("Simulation disconnected")
         self._connected = False
 
 
 class CountingSubscribeListener(rospy.SubscribeListener):
     def __init__(self):
-        super(CountingSubscribeListener, self).__init__()
+        super().__init__()
         self.connected_cbs = []
         self.disconnected_cbs = []
         self._connected = False
@@ -139,13 +138,13 @@ class CountingSubscribeListener(rospy.SubscribeListener):
                     cb()
 
 
-class GripperStatus(object):
+class GripperStatus:
     PALM_L1_CLOSED_POS = 1.84
     L1_L2_CLOSED_POS = 0.0
 
     def __init__(self, grippers):
         self._grippers = grippers
-        self._pub = rospy.Publisher('joint_states', JointState, queue_size=5)
+        self._pub = rospy.Publisher("joint_states", JointState, queue_size=5)
 
     def publish_status(self):
         msg = JointState()
@@ -153,24 +152,20 @@ class GripperStatus(object):
         for gripper in (g.gripper for g in self._grippers):
             pos = gripper.position
             joint_pos = (100.0 - pos) / 100.0 * self.PALM_L1_CLOSED_POS
-            msg.name.append(
-                '{}_ezgripper_knuckle_palm_L1_1'.format(gripper.name)
-            )
+            msg.name.append(f"{gripper.name}_ezgripper_knuckle_palm_L1_1")
             msg.position.append(joint_pos)
             joint_pos = (100.0 - pos) / 100.0 * self.L1_L2_CLOSED_POS
-            msg.name.append(
-                'main_ezgripper_knuckle_L1_L2_1'.format(gripper.name)
-            )
+            msg.name.append("main_ezgripper_knuckle_L1_L2_1")
             msg.position.append(joint_pos)
 
         self._pub.publish(msg)
 
 
-class EZGripper(object):
+class EZGripper:
     def __init__(self, gripper_name):
-        self.gripper = Gripper('~' + gripper_name, gripper_name)
+        self.gripper = Gripper("~" + gripper_name, gripper_name)
         self._calibrate_srv = rospy.Service(
-            '~' + gripper_name + '/calibrate', Empty, self._calibrate_srv
+            "~" + gripper_name + "/calibrate", Empty, self._calibrate_srv
         )
 
     def _calibrate_srv(self, _msg):
@@ -179,9 +174,9 @@ class EZGripper(object):
 
 
 def main():
-    rospy.init_node('ezgripper')
+    rospy.init_node("ezgripper")
     rospy.loginfo("Started")
-    gripper_params = rospy.get_param('~grippers')
+    gripper_params = rospy.get_param("~grippers")
 
     grippers = []
     for gripper_name, _servo_ids in gripper_params.items():
@@ -209,5 +204,5 @@ def main():
     rospy.loginfo("Exiting")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

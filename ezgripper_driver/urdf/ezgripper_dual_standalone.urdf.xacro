@@ -9,9 +9,13 @@
 
 <xacro:include filename="$(find ezgripper_driver)/urdf/ezgripper_dual.urdf.xacro"/>
 <!-- Add the gripper -->
-<ezgripper_dual prefix="left" parent_link="base_link">
+<xacro:ezgripper_dual prefix="left" parent_link="base_link">
 <origin xyz="${ezgripper_offset_x} ${ezgripper_offset_y} ${ezgripper_offset_z}" rpy="0 0 0"/>
-</ezgripper_dual>
+</xacro:ezgripper_dual>
+
+<material name="red">
+  <color rgba="0.7 0.0 0.0 0.99"/>
+</material>
 
 <link name="world"/>
 <joint name="fixed" type="fixed">

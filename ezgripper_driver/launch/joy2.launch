@@ -11,7 +11,7 @@
          Each servo id is assigned to a different gripper name. -->
     <rosparam param="grippers">{left:[1], right:[2]}</rosparam>
   </node>
-  
+
   <node pkg="ezgripper_driver" type="client.py" name="ezgripper_client" output="screen">
     <rosparam param="grippers">['ezgripper/left', 'ezgripper/right']</rosparam>
   </node>
